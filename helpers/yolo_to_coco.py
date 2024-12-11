@@ -1,20 +1,71 @@
-'''
-Script to convert YOLO format annotations to COCO format, draw annotations on images, and create a CSV file with bounding box information.
-It was designed to create the iToBoS challenge dataset
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-This script provides three functionalities:
-1. Converts YOLO format annotations to COCO format, saving the output to a JSON file.
-2. Draws bounding boxes on images based on YOLO format annotations and saves the annotated images in a new directory.
-3. Creates a CSV file containing bounding box information from YOLO format annotations.
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-To run this script, use the following commands:
-- To convert YOLO format to COCO format: python yolo_to_coco.py --data_dir <path_to_data_dir> --convert_to_coco
-- To draw annotations on images: python yolo_to_coco.py --data_dir <path_to_data_dir> --draw_annotations
-- To create a CSV file: python yolo_to_coco.py --data_dir <path_to_data_dir> --create_csv
+"""YOLO to COCO Annotation Converter and Visualization Tool.
+
+This script converts YOLO-format annotations into COCO-format annotations,
+optionally draws bounding boxes on the corresponding images, and can create
+a CSV file summarizing the annotations.
+
+Directory Structure:
+-------------------
+The input directory (data_dir) should contain:
+    data_dir/
+        images/
+            image_1.png
+            image_2.png
+            ...
+        labels/
+            image_1.txt
+            image_2.txt
+            ...
+
+Input Format:
+------------
+- Each .txt file in labels/ corresponds to an image in images/ with the same base name
+- YOLO annotation format (one line per box):
+    class_id x_center y_center width height [score]
+    where coordinates are normalized (0-1) relative to image dimensions
+    Note: score is optional
+
+Output Files:
+------------
+1. COCO Format (--convert_to_coco):
+    Creates yolo_to_coco_conversion_XXXX.json in data_dir/
+
+2. Annotated Images (--draw_annotations):
+    Creates data_dir/annotated_images/ containing:
+        image_1.png
+        image_2.png
+        ...
+
+3. CSV Summary (--create_csv):
+    Creates data_dir/ground_truth.csv with format:
+        ID,TARGET
+        image_name,1.0 x1 y1 w h
+        image_name,1.0 x1 y1 w h
+        ...
+    Note: Images without boxes listed as:
+        image_name,
+
+Usage:
+------
+Convert to COCO:
+    python yolo_to_coco.py --data_dir <path_to_data_dir> --convert_to_coco
+
+Draw annotations:
+    python yolo_to_coco.py --data_dir <path_to_data_dir> --draw_annotations
+
+Create CSV:
+    python yolo_to_coco.py --data_dir <path_to_data_dir> --create_csv
 
 Author: Joseph Adeola
-Date: 2024-09-17
-'''
+Email: adeolajosepholoruntoba@gmail.com
+Date: 2024-12-11
+"""
 
 import os
 import re
@@ -24,240 +75,350 @@ import argparse
 from PIL import Image, ImageDraw
 from termcolor import colored
 import random
+import sys
 
-# Function to convert YOLO format to COCO format
+
+def validate_directories(data_dir):
+    """
+    Validate that the required directories (images and labels) exist.
+
+    Parameters:
+    - data_dir (str): Path to the base directory containing 'images' and 'labels' subdirectories.
+
+    Raises:
+    - FileNotFoundError: If the required directories or files are not found.
+    """
+    if not os.path.isdir(data_dir):
+        raise FileNotFoundError(f"The provided data directory '{data_dir}' does not exist.")
+
+    images_folderpath = os.path.join(data_dir, "images")
+    labels_folderpath = os.path.join(data_dir, "labels")
+
+    if not os.path.isdir(images_folderpath):
+        raise FileNotFoundError(f"Images directory not found at '{images_folderpath}'.")
+    if not os.path.isdir(labels_folderpath):
+        raise FileNotFoundError(f"Labels directory not found at '{labels_folderpath}'.")
+
+
 def convert_to_coco_format(data_dir, image_extensions=['jpg', 'png']):
     """
     Converts YOLO format annotations to COCO format.
 
-    This function reads YOLO format annotation files, converts the normalized bounding box coordinates to absolute coordinates using the image dimensions, and saves the annotations in COCO format to a JSON file.
+    This function reads YOLO format annotation files, converts normalized bounding box coordinates 
+    to absolute coordinates using the image dimensions, and saves the annotations in COCO format 
+    to a JSON file in the data directory.
 
     Parameters:
     - data_dir (str): Path to the directory containing 'labels' and 'images' subdirectories.
-    - image_extensions (list): List of possible image file extensions.
+    - image_extensions (list): List of possible image file extensions, default ['jpg', 'png'].
 
     Returns:
-    - None: This function does not return a value. It saves the COCO format data to a JSON file.
-    """
-    # Initialize COCO data dictionary
-    coco_data = {"images": [], "annotations": [], "categories": [{"id": 1, "name": "lesion"}]}
-    # Initialize annotation id
-    annotation_id = 1
-    # Initialize score
-    score = 1.0
+    - None: The function saves a COCO format JSON file to the data directory.
 
-    # Define paths for labels and images
+    COCO Format Schema:
+    {
+      "images": [
+        {
+          "id": <int>,
+          "width": <int>,
+          "height": <int>
+        },
+        ...
+      ],
+      "annotations": [
+        {
+          "id": <int>,
+          "image_id": <int>,
+          "category_id": <float>,
+          "bbox": [x_min, y_min, width, height],
+          "area": <float>,
+          "iscrowd": 0,
+          "score": <float>
+        },
+        ...
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "name": "lesion"
+        }
+      ]
+    }
+    """
+    validate_directories(data_dir)
+
+    coco_data = {"images": [], "annotations": [], "categories": [{"id": 1, "name": "lesion"}]}
+    annotation_id = 1
+
     labels_folderpath = os.path.join(data_dir, "labels")
     images_folderpath = os.path.join(data_dir, "images")
-    # Get list of label files and sort them
-    label_files = os.listdir(labels_folderpath)
-    label_files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', str(f))])
 
-    # Iterate over each label file
+    label_files = os.listdir(labels_folderpath)
+    # Sort label files based on numeric values found in filenames
+    label_files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', str(f)) if x.isdigit()])
+
     for label_file in label_files:
-        # Open the label file and read its lines
+        if not label_file.endswith('.txt'):
+            continue
+
         with open(os.path.join(labels_folderpath, label_file), 'r') as f:
             lines = f.readlines()
-        # Get the image number from the label file name
-        image_id = int(label_file.split('_')[-1].split('.')[0])
-        # Generate image id from label file name
-        # image_id = int(hashlib.sha1(label_file.split('.')[0].encode()).hexdigest(), 16) % (10 ** 8)
 
+        # Extract image_id from filename
+        # Expected format: something_number.txt
+        image_id_candidates = re.findall(r'\d+', label_file)
+        if not image_id_candidates:
+            # If no digit found, create a pseudo ID from hash
+            image_id = int(hashlib.sha1(label_file.encode()).hexdigest(), 16) % (10 ** 8)
+        else:
+            image_id = int(image_id_candidates[-1])
 
-        # Initialize list to store bounding boxes
-        boxes = []
-        # Find the corresponding image file with any of the specified extensions
+        # Find corresponding image
         image_path = None
         for ext in image_extensions:
             temp_image_path = os.path.join(images_folderpath, label_file.replace('.txt', f'.{ext}'))
             if os.path.exists(temp_image_path):
                 image_path = temp_image_path
                 break
-        if not image_path:
-            continue  # Skip if no image file found with any of the specified extensions
-        # Open the corresponding image to get its dimensions
+
+        if image_path is None:
+            # If no matching image found, skip
+            continue
+
         with Image.open(image_path) as img:
             width, height = img.size
 
-        # Iterate over each line in the label file
+        boxes = []
         for line in lines:
-            parts = line.split()
+            parts = line.strip().split()
+            if len(parts) < 5:
+                # Invalid format line, skip
+                continue
             try:
-                class_id, x, y, w, h, score = map(float, parts[:])
-            except:
-                class_id, x, y, w, h = map(float, parts[:5])
-            # Convert normalized coordinates to absolute coordinates using the image dimensions
-            x, y, w, h = x * width, y * height, w * width, h * height
-            x1, y1, x2, y2 = int(x - w / 2), int(y - h / 2), int(x + w / 2), int(y + h / 2)
-            # Calculate area of the bounding box
-            area = w * h
-            # Add the bounding box to the list
+                # Attempt to parse score if present
+                if len(parts) == 6:
+                    class_id, x, y, w, h, score = map(float, parts)
+                else:
+                    class_id, x, y, w, h = map(float, parts[:5])
+                    score = 1.0
+            except ValueError:
+                # If parsing fails, skip this line
+                continue
+
+            # Convert normalized coordinates (YOLO) to absolute (COCO)
+            x_abs = x * width
+            y_abs = y * height
+            w_abs = w * width
+            h_abs = h * height
+            x1 = int(x_abs - w_abs / 2)
+            y1 = int(y_abs - h_abs / 2)
+
+            area = w_abs * h_abs
+
             boxes.append({
                 "id": annotation_id,
                 "image_id": image_id,
-                "category_id": class_id,# + 1,
-                "bbox": [x1, y1, w, h],
+                "category_id": class_id,  # As is, assuming class_id is already the correct ID
+                "bbox": [x1, y1, w_abs, h_abs],
                 "area": area,
                 "iscrowd": 0,
                 "score": score
             })
-            # Increment annotation id
             annotation_id += 1
 
-        # Add image data to the COCO data
         coco_data["images"].append({"id": image_id, "width": width, "height": height})
-        # Add bounding boxes to the COCO data
         coco_data["annotations"].extend(boxes)
 
-    # Generate a meaningful output file name
     output_json_file_name = f"yolo_to_coco_conversion_{random.randint(1000,9999)}.json"
     output_json_file = os.path.join(data_dir, output_json_file_name)
-    # Save the COCO data to a JSON file
+
     with open(output_json_file, 'w') as json_file:
         json.dump(coco_data, json_file)
 
-    # Print the path of the saved JSON file
-    print(colored(f"Output JSON file saved at: {output_json_file}", "green"))
+    print(colored(f"COCO format JSON file saved at: {output_json_file}", "green"))
 
 
 def create_csv(data_dir, image_extensions=['jpg', 'png']):
     """
-    Creates a CSV file with bounding box information.
+    Creates a CSV file with bounding box information from YOLO annotations.
+
+    The CSV format:
+    ID, TARGET
+    image_id,1.0 x1 y1 w h
+    If multiple boxes per image, each one is on a new line with the same ID.
+    If an image has no bounding boxes, it will have a line:
+    image_id,
 
     Parameters:
-    - data_dir (str): Path to the directory where the CSV will be saved.
+    - data_dir (str): Path to the directory containing 'labels' and 'images'.
     - image_extensions (list): List of possible image file extensions.
 
     Returns:
-    - None: This function saves the CSV file to the specified directory.
+    - None: The function saves 'ground_truth.csv' in the data directory.
     """
+    validate_directories(data_dir)
+
     csv_data = []
 
     labels_folderpath = os.path.join(data_dir, "labels")
     images_folderpath = os.path.join(data_dir, "images")
     label_files = os.listdir(labels_folderpath)
-    label_files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', str(f))])
+    label_files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', str(f)) if x.isdigit()])
 
     for label_file in label_files:
+        if not label_file.endswith('.txt'):
+            continue
+
         image_id = label_file.replace('.txt', '')
 
-        # Load the corresponding image to get its dimensions
+        # Find corresponding image
         image_path = None
         for ext in image_extensions:
-            temp_image_path = os.path.join(images_folderpath, label_file.replace('.txt', f'.{ext}'))
+            temp_image_path = os.path.join(images_folderpath, f"{image_id}.{ext}")
             if os.path.exists(temp_image_path):
                 image_path = temp_image_path
                 break
-        if not image_path:
-            continue  # Skip if no image file found with any of the specified extensions
+
+        if image_path is None:
+            # No image found for this label file
+            continue
+
         with Image.open(image_path) as img:
             width, height = img.size
 
         with open(os.path.join(labels_folderpath, label_file), 'r') as f:
-            lines = f.readlines()
+            lines = [l.strip() for l in f.readlines() if l.strip()]
+
+        if not lines:
+            # No bounding boxes
+            csv_data.append(f"{image_id},")
+            continue
 
         for line in lines:
             parts = line.split()
-            class_id, x, y, w, h = map(float, parts[:5])
-            # Unnormalize the coordinates
+            if len(parts) < 5:
+                # Invalid annotation line, skip
+                continue
+
+            try:
+                class_id, x, y, w, h = map(float, parts[:5])
+            except ValueError:
+                continue
+
             x1 = int((x - w / 2) * width)
             y1 = int((y - h / 2) * height)
-            w = int(w * width)
-            h = int(h * height)
-            # Append each bounding box as a new row
-            csv_data.append(f"{image_id},1.0 {x1} {y1} {w} {h}")
+            w_abs = int(w * width)
+            h_abs = int(h * height)
 
-        # If no bounding boxes, add an empty entry for the image
-        if not lines:
-            csv_data.append(f"{image_id},")
+            csv_data.append(f"{image_id},1.0 {x1} {y1} {w_abs} {h_abs}")
 
     # Write the CSV file
     csv_file_path = os.path.join(data_dir, "ground_truth.csv")
     with open(csv_file_path, 'w') as csv_file:
-        # Write header
-        csv_file.write("ID, TARGET\n")
-        # Write data
+        csv_file.write("ID,TARGET\n")
         for entry in csv_data:
             csv_file.write(entry + "\n")
 
     print(colored(f"CSV file saved at: {csv_file_path}", "green"))
-    
-# Function to draw annotations on images
+
+
 def draw_annotations(data_dir, image_extensions=['jpg', 'png']):
     """
-    Draws bounding boxes on images based on YOLO format annotations.
+    Draws bounding boxes on images based on YOLO format annotations and saves them.
 
-    This function reads YOLO format annotation files, converts the normalized bounding box coordinates to absolute coordinates using the image dimensions, and draws the bounding boxes on the corresponding images.
+    The annotated images are stored in 'annotated_images' directory within data_dir.
 
     Parameters:
     - data_dir (str): Path to the directory containing 'labels' and 'images' subdirectories.
     - image_extensions (list): List of possible image file extensions.
 
     Returns:
-    - None: This function does not return a value. It saves the annotated images to a new directory.
+    - None: Saves annotated images in the `annotated_images` directory.
     """
-    # Define paths for labels and images
+    validate_directories(data_dir)
+
     labels_folderpath = os.path.join(data_dir, "labels")
     images_folderpath = os.path.join(data_dir, "images")
-    # Get list of label files and sort them
+
     label_files = os.listdir(labels_folderpath)
-    label_files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', str(f))])
-    # Define directory to save annotated images
+    label_files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', str(f)) if x.isdigit()])
+
     annotated_images_dir = os.path.join(data_dir, "annotated_images")
-    # Create the directory if it doesn't exist
     if not os.path.exists(annotated_images_dir):
         os.makedirs(annotated_images_dir)
-    # Iterate over each label file
+
     for label_file in label_files:
-        # Find the corresponding image file with any of the specified extensions
+        if not label_file.endswith('.txt'):
+            continue
+
         image_path = None
         for ext in image_extensions:
             temp_image_path = os.path.join(images_folderpath, label_file.replace('.txt', f'.{ext}'))
             if os.path.exists(temp_image_path):
                 image_path = temp_image_path
                 break
-        if not image_path:
-            continue  # Skip if no image file found with any of the specified extensions
-        # Open the corresponding image
+
+        if image_path is None:
+            # No corresponding image found, skip
+            continue
+
         with Image.open(image_path) as img:
-            # Initialize drawing tool
             draw = ImageDraw.Draw(img)
-            # Open the label file and read its lines
+
             with open(os.path.join(labels_folderpath, label_file), 'r') as f:
-                lines = f.readlines()
-                # Iterate over each line in the label file
-                for line in lines:
-                    parts = line.split()
+                lines = [l.strip() for l in f.readlines() if l.strip()]
+
+            for line in lines:
+                parts = line.split()
+                if len(parts) < 5:
+                    # Invalid annotation line
+                    continue
+                try:
                     class_id, x, y, w, h = map(float, parts[:5])
-                    # Convert normalized coordinates to absolute coordinates using the image dimensions
-                    x, y, w, h = x * img.size[0], y * img.size[1], w * img.size[0], h * img.size[1]
-                    x1, y1, x2, y2 = int(x - w / 2), int(y - h / 2), int(x + w / 2), int(y + h / 2)
-                    # Draw the bounding box on the image with a thicker outline and a brighter shade of green
-                    draw.rectangle([x1, y1, x2, y2], outline="#00FF00", width=3)  # Changed outline color to a brighter green and increased outline width to 5
-            # Save the annotated image
-            # Ensure the file extension is correct before saving
+                except ValueError:
+                    continue
+
+                x_abs = x * img.size[0]
+                y_abs = y * img.size[1]
+                w_abs = w * img.size[0]
+                h_abs = h * img.size[1]
+
+                x1 = int(x_abs - w_abs / 2)
+                y1 = int(y_abs - h_abs / 2)
+                x2 = int(x_abs + w_abs / 2)
+                y2 = int(y_abs + h_abs / 2)
+
+                # Draw bounding box
+                draw.rectangle([x1, y1, x2, y2], outline="#00FF00", width=3)
+
             image_name = label_file.replace('.txt', '')
             for ext in image_extensions:
                 if image_path.endswith(ext):
                     annotated_image_path = os.path.join(annotated_images_dir, f"{image_name}.{ext}")
                     img.save(annotated_image_path)
-                    break  # Exit the loop once the image is saved
+                    break
+
+    print(colored(f"Annotated images saved in: {annotated_images_dir}", "green"))
+
 
 if __name__ == "__main__":
-    # Initialize argument parser
-    parser = argparse.ArgumentParser(description="Choose operations to perform on YOLO format data")
-    parser.add_argument("--data_dir", type=str, required=True, help="Path to the parent directory containing both labels and images folders")
-    parser.add_argument("--convert_to_coco", action="store_true", help="Convert YOLO format to COCO format")
-    parser.add_argument("--draw_annotations", action="store_true", help="Draw annotations on images and save them in a new directory")
+    parser = argparse.ArgumentParser(description="Process YOLO annotations: Convert to COCO, draw bounding boxes, or create CSV.")
+    parser.add_argument("--data_dir", type=str, required=True, help="Path to the parent directory containing 'labels' and 'images' folders")
+    parser.add_argument("--convert_to_coco", action="store_true", help="Convert YOLO format to COCO format JSON file")
+    parser.add_argument("--draw_annotations", action="store_true", help="Draw bounding boxes on images and save them")
     parser.add_argument("--create_csv", action="store_true", help="Create a CSV file with bounding box information")
-    # Parse the arguments
+
     args = parser.parse_args()
 
-    # Perform operations based on arguments
+    # Execute chosen operations
     if args.convert_to_coco:
         convert_to_coco_format(args.data_dir)
     if args.draw_annotations:
         draw_annotations(args.data_dir)
     if args.create_csv:
-        # Assuming there's a function to create a CSV file
         create_csv(args.data_dir)
+
+    # If no action specified, print help
+    if not (args.convert_to_coco or args.draw_annotations or args.create_csv):
+        print("No operation selected. Use --convert_to_coco, --draw_annotations, or --create_csv.")
+        sys.exit(1)
