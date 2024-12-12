@@ -9,7 +9,7 @@ alongside their annotated versions with bounding boxes drawn according to YOLO f
 
 Example Usage:
 --------------
-   python visualize_yolo.py --image-dir "./my_images" --label-dir "./my_labels" --num-files 10 --scale 0.75
+   python visualize_annotation.py --image-dir "./my_images" --label-dir "./my_labels" --num-files 10 --scale 0.75
 
    Parameters:
     --image-dir      Directory containing your images (.png, .jpg, .jpeg)
