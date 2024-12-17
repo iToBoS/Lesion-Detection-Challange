@@ -1,5 +1,5 @@
-# iToBoS-Challenge
-Official repository of the iToBoS challenge dataset.
+# iToBoS 2024 - Skin Lesion Detection with 3D-TBP
+Official repository of the iToBoS skin lesion detection challenge dataset.
 
 ## Overview
 The iToBoS challenge aims to provide a benchmark for evaluating object detection algorithms. This repository contains the dataset and tools necessary for training and testing models.
