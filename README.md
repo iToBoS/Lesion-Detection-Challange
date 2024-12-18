@@ -1,61 +1,139 @@
 # iToBoS 2024 - Skin Lesion Detection with 3D-TBP
-Official repository of the iToBoS skin lesion detection challenge dataset.
+
+Official repository for the iToBoS skin lesion detection challenge dataset utilizing Total Body Photography (TBP) imaging.
 
 ## Overview
-The iToBoS challenge aims to provide a benchmark for evaluating object detection algorithms. This repository contains the dataset and tools necessary for training and testing models.
+
+The iToBoS challenge provides a comprehensive benchmark for evaluating skin lesion detection algorithms using advanced 3D Total Body Photography. This repository contains the dataset, evaluation tools, and helper scripts necessary for training and testing models.
 
 ## Table of Contents
+
+- [Features](#features)
 - [Directory Structure](#directory-structure)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Dataset](#dataset)
+- [Helper Scripts](#helper-scripts)
+- [Usage Examples](#usage-examples)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Directory Structure
-iToBoS-Challenge/
-│
-├── dataset/                # Directory for dataset files
-│   ├── train/              # Training images and annotations
-│   ├── test/               # Test images and annotations
-│   └── additional_data/     # Any additional resources
-│
-├── helpers/                # Helper scripts
-│   └── yolo_to_coco.py     # Script to convert YOLO to COCO format
-│
-├── LICENSE                 # License file
-├── requirements.txt        # Required packages
-└── README.md               # Project documentation
+## Features
 
-## Installation
-To get started, clone the repository and install the required packages:
+- Complete skin lesion detection dataset with annotations
+- YOLO and COCO format support
+- Conversion utilities between annotation formats
+- Visualization tools for annotations
+- Statistical analysis notebooks
+- Evaluation scripts for model performance
+
+## Directory Structure
 
 ```
+iToBoS-Challenge/
+├── dataset/                     # Dataset root directory
+│   ├── train/                  # Training dataset
+│   │   ├── images/            # Training images
+│   │   └── labels/            # Training annotations
+│   ├── test/                  # Test dataset
+│   │   ├── images/            # Test images
+│   │   └── labels/            # Test annotations
+│   └── additional_data/       # Supplementary data
+│
+├── helpers/                    # Utility scripts
+│   ├── coco_to_yolo.py        # COCO to YOLO format converter
+│   ├── yolo_to_coco.py        # YOLO to COCO format converter
+│   ├── statistics.ipynb       # Dataset analysis notebook
+│   ├── visualize_annotation.py # Annotation visualization tool
+│   └── yolo_eval.py           # YOLO evaluation script
+│
+├── docs/                      # Documentation
+├── requirements.txt           # Python dependencies
+├── LICENSE                    # License information
+└── README.md                  # Project documentation
+```
+
+## Installation
+
+1. Clone the repository:
+```bash
 git clone https://github.com/yourusername/iToBoS-Challenge.git
 cd iToBoS-Challenge
+```
+
+2. Create a virtual environment (recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
 pip install -r requirements.txt
 ```
 
-## Usage
-To convert YOLO format annotations to COCO format, use the provided script:
-
-```
-python helpers/yolo_to_coco.py --input <path_to_yolo_annotations> --output <path_to_coco_annotations>
-```
-
 ## Dataset
-The dataset is organized into three main directories:
-- `train`: Contains training images and annotations.
-- `test`: Contains test images and annotations.
-- `additional_data`: Any additional resources related to the dataset.
+
+The dataset is organized into training and testing sets, each containing:
+- High-resolution skin images
+- Lesion annotations in YOLO format
+- Additional metadata about imaging conditions
+
+### Dataset Statistics
+- Training images: X
+- Test images: Y
+- Lesion classes: Z
+- Average lesions per image: W
+
+## Helper Scripts
+
+The `helpers` directory contains various utility scripts:
+
+1. **Format Conversion**
+   - `coco_to_yolo.py`: Converts COCO format annotations to YOLO
+   - `yolo_to_coco.py`: Converts YOLO format annotations to COCO
+
+2. **Analysis Tools**
+   - `statistics.ipynb`: Jupyter notebook for dataset analysis
+   - `visualize_annotation.py`: Tool for visualizing annotations
+   - `yolo_eval.py`: Evaluation script for YOLO format predictions
+
+## Usage Examples
+
+### Converting Annotations
+```bash
+# YOLO to COCO conversion
+python helpers/yolo_to_coco.py --input path/to/yolo --output path/to/coco
+
+# COCO to YOLO conversion
+python helpers/coco_to_yolo.py --input path/to/coco --output path/to/yolo
+```
+
+### Visualizing Annotations
+```bash
+python helpers/visualize_annotation.py --image path/to/image --label path/to/label
+```
+
+### Running Evaluation
+```bash
+python helpers/yolo_eval.py --pred path/to/predictions --gt path/to/ground_truth
+```
 
 ## Contributing
+
 We welcome contributions! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes and commit them (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Create a pull request.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- iToBoS Project Team
+- Contributing Research Institutions
+- Dataset Contributors
