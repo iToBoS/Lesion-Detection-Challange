@@ -122,7 +122,6 @@ Notes:
   predicted and ground truth boxes
 - Default IoU threshold is 0.5
 - Only boxes of the same class are compared
-- Empty or missing annotation files are handled gracefully
 - Results are saved to './evaluation_results/' by default if save_results=True
 
 Author: Joseph Adeola
