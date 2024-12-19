@@ -20,7 +20,7 @@
 # PDF files (uncomment if you don't want to track the compiled PDF)
 # *.pdf
 
-./images/underwear
+/images/underwear
 
 # Editor and OS specific files
 .vscode/

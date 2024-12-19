@@ -87,7 +87,7 @@ The dataset is organized into training and testing sets, each containing:
 
 
 ## Samples from Dataset
-<img src="images/annotation-examples.png" alt="Sample Image 1" width="700">
+<img src="images/annotation-examples.png" alt="Sample Image 1" width="1000">
 
 
 
