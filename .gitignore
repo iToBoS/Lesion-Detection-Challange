@@ -1,0 +1,44 @@
+# LaTeX files
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
+*.idx
+*.ilg
+*.ind
+*.nav
+*.snm
+*.vrb
+
+# PDF files (uncomment if you don't want to track the compiled PDF)
+# *.pdf
+
+./images/underwear
+
+# Editor and OS specific files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Build directories
+build/
+dist/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Environment and configuration
+.env
+config.local.tex

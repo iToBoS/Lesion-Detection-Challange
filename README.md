@@ -12,6 +12,7 @@ The iToBoS challenge provides a comprehensive benchmark for evaluating skin lesi
 - [Directory Structure](#directory-structure)
 - [Installation](#installation)
 - [Dataset](#dataset)
+- [Samples from Dataset](#samples-from-dataset)
 - [Helper Scripts](#helper-scripts)
 - [Usage Examples](#usage-examples)
 - [Contributing](#contributing)
@@ -79,10 +80,16 @@ The dataset is organized into training and testing sets, each containing:
 - Additional metadata about imaging conditions
 
 ### Dataset Statistics
-- Training images: X
-- Test images: Y
-- Lesion classes: Z
+- Training images: 7000
+- Test images: 7000
+- Lesion classes: [0 : unlabeled]
 - Average lesions per image: W
+
+
+## Samples from Dataset
+<img src="images/annotation-examples.png" alt="Sample Image 1" width="700">
+
+
 
 ## Helper Scripts
 
