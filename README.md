@@ -1,7 +1,8 @@
-<div style="overflow: hidden;">
+<!-- <div style="overflow: hidden;"> -->
     <img src="images/itoboslogo.png" alt="Logo" width="100" style="float: left; margin-right: 20px;">
-    <h1 style="font-weight: bold; margin-bottom: 0; display:inline;">2024 - Skin Lesion Detection with 3D-TBP</h1>
+    <h1 style="font-weight: bold; margin-bottom: 0; display:inline;">iToBoS 2024 - Skin Lesion Detection with 3D-TBP</h1>
 </div>
+
 
 [![Challenge Page](https://img.shields.io/badge/Kaggle-blue.svg)](https://www.kaggle.com/competitions/itobos-2024-detection)
 [![Paper](https://img.shields.io/badge/Paper-purple.svg)](YOUR_PAPER_URL_HERE)
