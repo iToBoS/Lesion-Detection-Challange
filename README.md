@@ -1,10 +1,7 @@
-<!-- <img src="images/logo.png" alt="Logo" width="200"> # iToBoS 2024 - Skin Lesion Detection with 3D-TBP -->
-<div style="display: flex; align-items: center;">
-    <img src="images/itoboslogo.png" alt="Logo" width="100" style="margin-right: 20px;">
-   <h1 style="font-weight: bold; margin-bottom: 0;">2024 - Skin Lesion Detection with 3D-TBP</h1>
-    <!-- # iToBoS 2024 - Skin Lesion Detection with 3D-TBP -->
+<div style="overflow: hidden;">
+    <img src="images/itoboslogo.png" alt="Logo" width="100" style="float: left; margin-right: 20px;">
+    <h1 style="font-weight: bold; margin-bottom: 0; display:inline;">iToBoS 2024 - Skin Lesion Detection with 3D-TBP</h1>
 </div>
-
 
 
 [![Challenge Page](https://img.shields.io/badge/Kaggle-blue.svg)](https://www.kaggle.com/competitions/itobos-2024-detection)
