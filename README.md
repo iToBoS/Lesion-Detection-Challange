@@ -1,5 +1,9 @@
 # iToBoS 2024 - Skin Lesion Detection with 3D-TBP
 
+[![Challenge Page](https://img.shields.io/badge/Kaggle-blue.svg)](https://www.kaggle.com/competitions/itobos-2024-detection)
+[![Paper](https://img.shields.io/badge/Paper-purple.svg)](YOUR_PAPER_URL_HERE)
+<!-- Replace YOUR_PAPER_URL_HERE with the actual link to the PDF of your paper -->
+
 Official repository for the iToBoS skin lesion detection challenge dataset utilizing Total Body Photography (TBP) imaging.
 
 ## Overview
@@ -20,7 +24,7 @@ The iToBoS challenge provides a comprehensive benchmark for evaluating skin lesi
 
 ## Features
 
-- Complete skin lesion detection dataset with annotations
+- Complete skin lesion detection dataset with annotations on Kaggle [here](https://www.kaggle.com/competitions/itobos-2024-detection/data)
 - YOLO and COCO format support
 - Conversion utilities between annotation formats
 - Visualization tools for annotations
@@ -28,7 +32,7 @@ The iToBoS challenge provides a comprehensive benchmark for evaluating skin lesi
 - Evaluation scripts for model performance
 
 ## Directory Structure
-<!-- This is a comment 
+<!-- This is a comment
 ├── dataset/                     # Dataset root directory
 │   ├── train/                  # Training dataset
 │   │   ├── images/            # Training images
@@ -81,15 +85,16 @@ The dataset is organized into training and testing sets, each containing:
 - Additional metadata about imaging conditions
 
 ### Dataset Statistics
-- Training images: 7000
-- Test images: 7000
+- Training images: 8000
+- Test images: 9000
 - Lesion classes: [0 : unlabeled]
-- Average lesions per image: W
 
 
 ## Samples from Dataset
 <img src="images/annotation-examples.png" alt="Sample Image 1" width="1000">
 
+<!-- Add logo here:-->
+<img src="images/logo.png" alt="Logo" width="200">
 
 
 ## Helper Scripts
@@ -138,10 +143,12 @@ We welcome contributions! Please follow these steps:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Creative Common License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
+This competition was hosted as part of the European Union's Horizon 2020 research and innovation programme iToBoS - Intelligent Total Body Scanner for Early Detection of Melanoma, under grant agreement no. 965221.
 
-- iToBoS Project Team
-- Contributing Research Institutions
-- Dataset Contributors
+## Citation
+
+Josep Malvehy, Peter Soyer, Nuria Ferrera, Clare Primiero, Serena Bonin, Gisele Rezze, Brian D’Alessandro, Anup Saha, Joseph Adeola, Hayat Rajani, Rafael Garcia. iToBoS 2024 - Skin Lesion Detection with 3D-TBP. https://kaggle.com/competitions/itobos-2024-detection, 2024. Kaggle.
+
