@@ -1,4 +1,11 @@
-# iToBoS 2024 - Skin Lesion Detection with 3D-TBP
+<!-- <img src="images/logo.png" alt="Logo" width="200"> # iToBoS 2024 - Skin Lesion Detection with 3D-TBP -->
+<div style="display: flex; align-items: center;">
+    <img src="images/itoboslogo.png" alt="Logo" width="150" style="margin-right: 20px;">
+      <h1 style="font-weight: bold; margin-bottom: 0;">2024 - Skin Lesion Detection with 3D-TBP</h1>
+    <!-- # iToBoS 2024 - Skin Lesion Detection with 3D-TBP -->
+</div>
+
+
 
 [![Challenge Page](https://img.shields.io/badge/Kaggle-blue.svg)](https://www.kaggle.com/competitions/itobos-2024-detection)
 [![Paper](https://img.shields.io/badge/Paper-purple.svg)](YOUR_PAPER_URL_HERE)
@@ -91,10 +98,9 @@ The dataset is organized into training and testing sets, each containing:
 
 
 ## Samples from Dataset
-<img src="images/annotation-examples.png" alt="Sample Image 1" width="1000">
+<img src="images/itobos-challenge-image-samples" alt="Examples of images in the iToBoS challenge dataset" width="1000">
 
 <!-- Add logo here:-->
-<img src="images/logo.png" alt="Logo" width="200">
 
 
 ## Helper Scripts
