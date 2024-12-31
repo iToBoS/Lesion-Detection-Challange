@@ -1,5 +1,5 @@
-<!-- <div style="overflow: hidden;"> -->
-    <img src="images/itoboslogo.png" alt="Logo" width="100" style="float: left; margin-right: 20px;">
+<div style="overflow: hidden;">
+    <!-- <img src="images/itoboslogo.png" alt="Logo" width="100" style="float: left; margin-right: 20px;"> -->
     <h1 style="font-weight: bold; margin-bottom: 0; display:inline;">iToBoS 2024 - Skin Lesion Detection with 3D-TBP</h1>
 </div>
 
