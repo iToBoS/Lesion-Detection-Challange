@@ -28,9 +28,7 @@ The iToBoS challenge provides a comprehensive benchmark for evaluating skin lesi
 - Evaluation scripts for model performance
 
 ## Directory Structure
-
-```
-iToBoS-Challenge/
+<!-- This is a comment 
 ├── dataset/                     # Dataset root directory
 │   ├── train/                  # Training dataset
 │   │   ├── images/            # Training images
@@ -40,6 +38,9 @@ iToBoS-Challenge/
 │   │   └── labels/            # Test annotations
 │   └── additional_data/       # Supplementary data
 │
+-->
+```
+iToBoS-Challenge/
 ├── helpers/                    # Utility scripts
 │   ├── coco_to_yolo.py        # COCO to YOLO format converter
 │   ├── yolo_to_coco.py        # YOLO to COCO format converter
