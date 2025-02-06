@@ -5,7 +5,7 @@
 
 
 [![Challenge Page](https://img.shields.io/badge/Kaggle-blue.svg)](https://www.kaggle.com/competitions/itobos-2024-detection)
-[![Paper](https://img.shields.io/badge/Paper-purple.svg)](YOUR_PAPER_URL_HERE)
+[![Paper](https://img.shields.io/badge/Paper-purple.svg)](https://arxiv.org/abs/2501.18270)
 <!-- Replace YOUR_PAPER_URL_HERE with the actual link to the PDF of your paper -->
 
 Official repository for the iToBoS skin lesion detection challenge dataset utilizing Total Body Photography (TBP) imaging.
